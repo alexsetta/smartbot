@@ -1,0 +1,9 @@
+*.cfg
+*.exe
+*.txt
+*.bat
+*.log
+*.zip
+go.mod
+go.sum
+/.idea
