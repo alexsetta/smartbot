@@ -1,0 +1,62 @@
+package main
+
+import (
+	"fmt"
+	"github.com/alexsetta/smartbot/cfg"
+	"github.com/alexsetta/smartbot/tipos"
+	"log"
+	"os"
+	"strings"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
+
+var (
+	carteira = tipos.Carteira{}
+	config   = tipos.Config{}
+)
+
+func main() {
+	if err := cfg.ReadConfig("../smartbot.cfg", &config); err != nil {
+		log.Fatal(fmt.Sprintf("cotacao: read smartbot.cfg: %s", err))
+	}
+	config.TelegramID = 0
+
+	b, err := os.ReadFile("./token.cfg")
+	if err != nil {
+		log.Fatal(err)
+	}
+	token := string(b)
+
+	bot, err := tgbotapi.NewBotAPI(token)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bot.Debug = false
+	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+	updates := bot.GetUpdatesChan(u)
+
+	for update := range updates {
+		if update.Message != nil { // If we got a message
+			var response string
+			cmd := strings.ToLower(update.Message.Text)
+			switch {
+			case cmd == "status":
+				response = "online"
+			case cmd == "total":
+				response = Total()
+			case cmd[0:1] == "/":
+				response = Cotacao(cmd[1:])
+			default:
+				response = "Comando inválido: " + cmd
+			}
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+			bot.Send(msg)
+		}
+	}
+}
