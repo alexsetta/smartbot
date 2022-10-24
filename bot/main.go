@@ -5,7 +5,6 @@ import (
 	"github.com/alexsetta/smartbot/cfg"
 	"github.com/alexsetta/smartbot/tipos"
 	"log"
-	"os"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -22,13 +21,7 @@ func main() {
 	}
 	config.TelegramID = 0
 
-	b, err := os.ReadFile("./token.cfg")
-	if err != nil {
-		log.Fatal(err)
-	}
-	token := string(b)
-
-	bot, err := tgbotapi.NewBotAPI(token)
+	bot, err := tgbotapi.NewBotAPI(config.TelegramToken)
 	if err != nil {
 		log.Fatal(err)
 	}
