@@ -56,6 +56,10 @@ func main() {
 		os.Exit(0)
 	}
 
+	if config.TimeNextAlert == 0.0 {
+		config.TimeNextAlert = 1
+	}
+
 	for {
 		if err := cfg.ReadConfig("./carteira.cfg", &carteira); err != nil {
 			log.Fatal(err)
@@ -98,32 +102,32 @@ func main() {
 func setAlert(tipo string) bool {
 	switch tipo {
 	case "ganho":
-		if time.Since(alerta.Ganho).Hours() < 4 {
+		if time.Since(alerta.Ganho).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.Ganho = time.Now()
 	case "perda":
-		if time.Since(alerta.Perda).Hours() < 4 {
+		if time.Since(alerta.Perda).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.Perda = time.Now()
 	case "alertainf":
-		if time.Since(alerta.AlertaInf).Hours() < 4 {
+		if time.Since(alerta.AlertaInf).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.AlertaInf = time.Now()
 	case "alertasup":
-		if time.Since(alerta.AlertaSup).Hours() < 4 {
+		if time.Since(alerta.AlertaSup).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.AlertaSup = time.Now()
 	case "alertaperc":
-		if time.Since(alerta.AlertaPerc).Hours() < 4 {
+		if time.Since(alerta.AlertaPerc).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.AlertaPerc = time.Now()
 	case "rsi":
-		if time.Since(alerta.RSI).Hours() < 4 {
+		if time.Since(alerta.RSI).Hours() < config.TimeNextAlert {
 			return false
 		}
 		alerta.RSI = time.Now()

@@ -3,12 +3,12 @@ package cfg
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
 func ReadConfig(fileName string, cfg interface{}) error {
-	b, err := ioutil.ReadFile(fileName)
+	b, err := os.ReadFile(fileName)
 	if err != nil {
 		return fmt.Errorf("readConfig: %w", err)
 	}

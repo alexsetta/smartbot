@@ -5,12 +5,13 @@ import (
 )
 
 type Config struct {
-	SleepMinutes  int    `json:"sleepMinutes"`
-	TelegramID    int64  `json:"telegramID"`
-	TelegramToken string `json:"telegramToken"`
-	EmailLogin    string `json:"emailLogin"`
-	EmailPassword string `json:"emailPassword"`
-	EmailTo       string `json:"emailTo"`
+	SleepMinutes  int     `json:"sleepMinutes"`
+	TimeNextAlert float64 `json:"timeNextAlert"`
+	TelegramID    int64   `json:"telegramID"`
+	TelegramToken string  `json:"telegramToken"`
+	EmailLogin    string  `json:"emailLogin"`
+	EmailPassword string  `json:"emailPassword"`
+	EmailTo       string  `json:"emailTo"`
 }
 
 type Quotes struct {
