@@ -66,6 +66,8 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string,
 
 	result.Hora = time.Now().In(time.FixedZone("UTC-3", -3*60*60)).Format("02/01/2006 15:04:05")
 	result.Simbolo = ativo.Simbolo
+	result.Quantidade = ativo.Quantidade
+	result.Inicial = ativo.Inicial
 	result.Atual = math.Trunc(atual*100) / 100
 	result.Resultado = math.Trunc(diff*100) / 100
 	result.Preco = math.Trunc(price*100) / 100

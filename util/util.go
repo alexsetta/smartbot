@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+func Now() string {
+	return time.Now().In(time.FixedZone("UTC-3", -3*60*60)).Format("2006/01/02 15:04:05")
+}
+
 func Segundos(s string) (int64, error) {
 	v := strings.Split(s, ":")
 

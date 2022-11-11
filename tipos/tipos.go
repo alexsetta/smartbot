@@ -55,6 +55,8 @@ type Alertas struct {
 type Result struct {
 	Hora               string  `json:"hora"`
 	Simbolo            string  `json:"simbolo"`
+	Quantidade         float64 `json:"quantidade"`
+	Inicial            float64 `json:"inicial"`
 	Preco              float64 `json:"preco"`
 	Resultado          float64 `json:"resultado"`
 	Atual              float64 `json:"atual"`
