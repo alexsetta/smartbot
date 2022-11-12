@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,14 +10,14 @@ func TestFind(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, asset)
 
-	outJson, err := asset.Find()
+	err = asset.Find()
 	assert.Nil(t, err)
-	assert.NotNil(t, outJson)
+	assert.NotNil(t, asset.data)
 
-	assert.Equal(t, "BTCBRL", outJson.Simbolo, "BTCBRL should equal BTCBRL")
-	assert.NotZero(t, outJson.Preco, "Preco should not be zero")
+	assert.Equal(t, "BTCBRL", asset.data.Simbolo, "BTCBRL should equal BTCBRL")
+	assert.NotZero(t, asset.data.Preco, "Preco should not be zero")
 
-	fmt.Println(PrettyJson(outJson))
+	//fmt.Println(PrettyJson(asset.data))
 }
 
 func TestGetAll(t *testing.T) {
@@ -27,8 +26,11 @@ func TestGetAll(t *testing.T) {
 	assert.NotNil(t, asset)
 
 	outJson, err := asset.GetAll()
+
 	assert.Nil(t, err)
 	assert.NotNil(t, outJson)
+	assert.NotZero(t, len(outJson), "outJson should not be zero")
+	assert.NotZero(t, outJson[0].Preco, "Preco should not be zero")
 
-	fmt.Println(PrettyJson(outJson))
+	//fmt.Println(PrettyJson(outJson))
 }

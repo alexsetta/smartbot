@@ -9,9 +9,6 @@ func Ticker(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	// desabilita mensagens no Telegram
-	config.TelegramID = 0
-
 	asset, err := NewAsset(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -26,17 +23,17 @@ func Ticker(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		resposta, _ = PrettyJson(data)
-		w.Write([]byte(resposta))
+		_, _ = w.Write([]byte(resposta))
 		return
 	}
 
-	outJson, err := asset.Find()
+	err = asset.Find()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	prettyJSON, _ := PrettyJson(outJson)
+	prettyJSON, _ := PrettyJson(asset.data)
 	resposta = prettyJSON + ","
 	resposta = "[" + resposta[:len(resposta)-1] + "]"
-	w.Write([]byte(resposta))
+	_, _ = w.Write([]byte(resposta))
 }

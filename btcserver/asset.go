@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/alexsetta/smartbot/cotacao"
 	"github.com/alexsetta/smartbot/tipos"
 	"strings"
@@ -18,6 +19,14 @@ func NewAsset(id string) (*Asset, error) {
 	if err := asset.IsValid(); err != nil {
 		return nil, err
 	}
+
+	if id == "all" {
+		return asset, nil
+	}
+
+	if err := asset.Find(); err != nil {
+		return nil, err
+	}
 	return asset, nil
 }
 
@@ -28,15 +37,12 @@ func (a *Asset) IsValid() error {
 	return nil
 }
 
-func (a *Asset) Find() (tipos.Result, error) {
+func (a *Asset) Find() error {
+	if err := ReadConfig(); err != nil {
+		return err
+	}
 	// desabilita mensagens no Telegram
 	config.TelegramID = 0
-
-	if err := ReadConfig(); err != nil {
-		return tipos.Result{}, err
-	}
-
-	outJson := tipos.Result{}
 
 	ativo := tipos.Ativo{}
 	for _, atv := range carteira.Ativos {
@@ -47,28 +53,26 @@ func (a *Asset) Find() (tipos.Result, error) {
 	}
 
 	if ativo == (tipos.Ativo{}) {
-		return tipos.Result{}, errors.New("Ativo não encontrado")
+		return fmt.Errorf("asset %s not found", a.id)
 	}
 
 	_, _, out, err := cotacao.Calculo(ativo, config, alerta)
 	if err != nil {
-		return tipos.Result{}, err
+		return err
 	}
-	outJson = out
-
-	return outJson, nil
+	a.data = out
+	return nil
 }
 
 func (a *Asset) GetAll() ([]tipos.Result, error) {
-	// desabilita mensagens no Telegram
-	config.TelegramID = 0
-
 	if err := ReadConfig(); err != nil {
 		return []tipos.Result{}, err
 	}
+	// desabilita mensagens no Telegram
+	config.TelegramID = 0
 
 	resposta := ""
-	outJson := []tipos.Result{}
+	var outJson []tipos.Result
 	for _, atv := range carteira.Ativos {
 		_, _, out, err := cotacao.Calculo(atv, config, alerta)
 		if err != nil {
