@@ -31,22 +31,13 @@ func Order(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = fromAsset.Find()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	toAsset, err := NewAsset(to)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = toAsset.Find()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
 	resposta := fmt.Sprintf(`{"hora": "%v","from": "%v","to":"%v}`, util.Now(), fromAsset, toAsset)
 	_, _ = w.Write([]byte(resposta))
 }
