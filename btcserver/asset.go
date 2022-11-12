@@ -44,6 +44,9 @@ func (a *Asset) Find() error {
 	// desabilita mensagens no Telegram
 	config.TelegramID = 0
 
+	// desabilita saveLog
+	config.SaveLog = false
+
 	ativo := tipos.Ativo{}
 	for _, atv := range carteira.Ativos {
 		if strings.ToLower(atv.Simbolo) == a.id {
