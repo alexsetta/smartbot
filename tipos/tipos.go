@@ -12,6 +12,7 @@ type Config struct {
 	EmailLogin    string  `json:"emailLogin"`
 	EmailPassword string  `json:"emailPassword"`
 	EmailTo       string  `json:"emailTo"`
+	SaveLog       bool    `json:"saveLog"`
 }
 
 type Quotes struct {

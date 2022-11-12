@@ -89,7 +89,9 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string,
 		result.LastQty = util.StringToValue(m[13])
 		result.Volume = util.StringToValue(m[29])
 	}
-	util.AppendFile("./cotacao.log", fmt.Sprintf("%v;%.8f;%.2f;%.9f;%0.0f;%0.0f", ativo.Simbolo, price, result.RSI, result.PriceChange, result.Volume, result.LastQty))
+	if cfg.SaveLog {
+		util.AppendFile("./cotacao.log", fmt.Sprintf("%v;%.8f;%.2f;%.9f;%0.0f;%0.0f", ativo.Simbolo, price, result.RSI, result.PriceChange, result.Volume, result.LastQty))
+	}
 
 	res := fmt.Sprintf("%-12v %-20v %-15v", ativo.Simbolo, fmt.Sprintf("Preço: R$ %.2f", price), fmt.Sprintf("Dif.: %.2f", diff))
 	if ativo.AlertaPerc != 0 || ativo.Tipo == "criptomoeda" {

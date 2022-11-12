@@ -71,6 +71,9 @@ func (a *Asset) GetAll() ([]tipos.Result, error) {
 	// desabilita mensagens no Telegram
 	config.TelegramID = 0
 
+	// desabilita saveLog
+	config.SaveLog = false
+
 	resposta := ""
 	var outJson []tipos.Result
 	for _, atv := range carteira.Ativos {
