@@ -48,6 +48,7 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string,
 	var result tipos.Result
 	price, m, err := Price(ativo)
 	if err != nil {
+		fmt.Println(m)
 		return "", "", result, fmt.Errorf("calculo: %w", err)
 	}
 
