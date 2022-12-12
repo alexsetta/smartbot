@@ -67,7 +67,7 @@ func main() {
 	}
 	mr := make(map[string]*rsi.RSI)
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo)
 	}
 
 	for {
@@ -152,7 +152,7 @@ func total(cfg tipos.Config, cart tipos.Carteira) string {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo)
 		_, _, out, err := cotacao.Calculo(atv, cfg, alerta, mr)
 		if err != nil {
 			return fmt.Sprintf("total: %w", err)

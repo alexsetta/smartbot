@@ -12,16 +12,14 @@ import (
 const period = 14
 
 type RSI struct {
-	id       string
-	loadFile bool
-	prices   []float64
+	id     string
+	prices []float64
 }
 
 // NewRSI returns a new RSI struct
-func NewRSI(id string, loadFile bool) *RSI {
+func NewRSI(id string) *RSI {
 	return &RSI{
-		id:       id,
-		loadFile: loadFile,
+		id: id,
 	}
 }
 
@@ -39,10 +37,6 @@ func (r *RSI) Calculate() float64 {
 		avgGain float64
 		avgLoss float64
 	)
-
-	if len(r.prices) < (period+1) && r.loadFile {
-		r.load()
-	}
 
 	if len(r.prices) < (period + 1) {
 		return 0
@@ -71,7 +65,7 @@ func (r *RSI) Calculate() float64 {
 
 // get file name
 func (r *RSI) fileName() string {
-	return fmt.Sprintf("../../files/rsi_%s.txt", strings.ToLower(r.id))
+	return fmt.Sprintf("../files/rsi_%s.txt", strings.ToLower(r.id))
 }
 
 // save buffer to file
@@ -88,7 +82,7 @@ func (r *RSI) save() {
 }
 
 // load buffer from file
-func (r *RSI) load() {
+func (r *RSI) Load() {
 	buffer, err := os.ReadFile(r.fileName())
 	if err != nil {
 		log.Println(err)

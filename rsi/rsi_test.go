@@ -106,6 +106,7 @@ func TestRSI_ManyRSI(t *testing.T) {
 func TestRSI_LoadRSI(t *testing.T) {
 	r := NewRSI("ETHBRL")
 	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
+	r.Load()
 
 	rsi := r.Calculate()
 	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
