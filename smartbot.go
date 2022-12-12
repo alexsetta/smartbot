@@ -77,7 +77,7 @@ func main() {
 		hm := time.Now().In(loc).Format("15:04")
 		header := fmt.Sprintln(time.Now().In(loc).Format("02/01/2006 15:04:05"))
 		ultimo := header
-		fmt.Print(header)
+		fmt.Print("\n" + header)
 
 		for _, ativo := range carteira.Ativos {
 			go func(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) {
@@ -87,7 +87,7 @@ func main() {
 					return
 				}
 				fmt.Println(resp)
-				ultimo += resp + "\n"
+				ultimo += resp
 				setAlert(semaforo)
 			}(ativo, config, alerta)
 		}
@@ -95,7 +95,7 @@ func main() {
 			fmt.Println(fmt.Errorf("writefile: %w", err))
 		}
 
-		fmt.Println()
+		//fmt.Println()
 		dia := time.Now().In(loc).Format("02")
 		if hm >= "07:00" && hm <= "08:00" && dia != ultimoDia {
 			ultimoDia = dia
