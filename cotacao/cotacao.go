@@ -2,6 +2,7 @@ package cotacao
 
 import (
 	"fmt"
+	"github.com/alexsetta/smartbot/rsi"
 	"github.com/alexsetta/smartbot/util"
 	"io/ioutil"
 	"math"
@@ -44,7 +45,7 @@ func getHttp(url string) (string, error) {
 	return string(b), nil
 }
 
-func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string, string, tipos.Result, error) {
+func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[string]*rsi.RSI) (string, string, tipos.Result, error) {
 	var result tipos.Result
 	price, m, err := Price(ativo)
 	if err != nil {
@@ -80,7 +81,9 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string,
 	//}
 
 	if (ativo.Tipo == "criptomoeda" || ativo.Tipo == "etf") && len(ativo.RSI) > 0 {
-		result.RSI, _ = GetRSI(ativo.RSI)
+		//result.RSI, _ = GetRSI(ativo.RSI)
+		rsi[ativo.Simbolo].Add(result.Atual)
+		result.RSI = rsi[ativo.Simbolo].Calculate()
 	}
 
 	if len(m) >= 29 {
@@ -108,35 +111,35 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) (string,
 		}
 	}
 
-	if ativo.Perda != 0 && diff < 0 && math.Abs(diff) > ativo.Perda && time.Since(alerta.Perda).Hours() > 4 {
-		msg := fmt.Sprintf(res + "Atingiu o limite de perda!")
+	if ativo.Perda != 0 && diff < 0 && diff < ativo.Perda && time.Since(alerta.Perda).Hours() > 4 {
+		msg := res + "Atingiu o limite de perda!"
 		sema := "perda"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 	if ativo.Ganho != 0 && diff > 0 && diff > ativo.Ganho && time.Since(alerta.Ganho).Hours() > 4 {
-		msg := fmt.Sprintf(res + "Atingiu o limite de ganho!")
+		msg := res + "Atingiu o limite de ganho!"
 		sema := "ganho"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
 	if ativo.AlertaInf != 0 && price <= ativo.AlertaInf && time.Since(alerta.AlertaInf).Hours() > 4 {
-		msg := fmt.Sprintf(res + "Atingiu o limite inferior!")
+		msg := res + "Atingiu o limite inferior!"
 		sema := "alertainf"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
 	if ativo.AlertaSup != 0 && price >= ativo.AlertaSup && time.Since(alerta.AlertaSup).Hours() > 4 {
-		msg := fmt.Sprintf(res + "Atingiu o limite superior!")
+		msg := res + "Atingiu o limite superior!"
 		sema := "alertasup"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
 	if ativo.AlertaPerc > 0 && perc > ativo.AlertaPerc && time.Since(alerta.AlertaPerc).Hours() > 4 {
-		msg := fmt.Sprintf(res + "Atingiu o limite percentual!")
+		msg := res + "Atingiu o limite percentual!"
 		sema := "alertaperc"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil

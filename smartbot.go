@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/alexsetta/smartbot/rsi"
 	"io/ioutil"
 	"os"
 	"time"
@@ -60,6 +61,15 @@ func main() {
 		config.TimeNextAlert = 1
 	}
 
+	// cria um RSI para cada ativo
+	if err := cfg.ReadConfig("./carteira.cfg", &carteira); err != nil {
+		log.Fatal(err)
+	}
+	mr := make(map[string]*rsi.RSI)
+	for _, atv := range carteira.Ativos {
+		mr[atv.Simbolo] = rsi.NewRSI()
+	}
+
 	for {
 		if err := cfg.ReadConfig("./carteira.cfg", &carteira); err != nil {
 			log.Fatal(err)
@@ -71,7 +81,7 @@ func main() {
 
 		for _, ativo := range carteira.Ativos {
 			go func(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas) {
-				resp, semaforo, _, err := cotacao.Calculo(ativo, config, alerta)
+				resp, semaforo, _, err := cotacao.Calculo(ativo, config, alerta, mr)
 				if err != nil {
 					log.Println(err)
 					return
@@ -137,12 +147,13 @@ func setAlert(tipo string) bool {
 
 func total(cfg tipos.Config, cart tipos.Carteira) string {
 	atual := 0.0
+	mr := make(map[string]*rsi.RSI)
 	for _, atv := range cart.Ativos {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-
-		_, _, out, err := cotacao.Calculo(atv, cfg, alerta)
+		mr[atv.Simbolo] = rsi.NewRSI()
+		_, _, out, err := cotacao.Calculo(atv, cfg, alerta, mr)
 		if err != nil {
 			return fmt.Sprintf("total: %w", err)
 		}

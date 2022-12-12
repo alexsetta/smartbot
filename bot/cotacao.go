@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/alexsetta/smartbot/rsi"
 	"strings"
 	"time"
 
@@ -34,11 +35,16 @@ func Cotacao(id string) string {
 		return fmt.Sprintf("cotacao: read carteira.cfg: %s", err)
 	}
 
+	mr := make(map[string]*rsi.RSI)
+	for _, atv := range carteira.Ativos {
+		mr[atv.Simbolo] = rsi.NewRSI()
+	}
+
 	resposta := "["
 	outJson := tipos.Result{}
 	if id == "all" {
 		for _, atv := range carteira.Ativos {
-			_, _, out, err := cotacao.Calculo(atv, config, alerta)
+			_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 			if err != nil {
 				return fmt.Sprintf("cotacao: calculo: %s", err)
 			}
@@ -58,7 +64,7 @@ func Cotacao(id string) string {
 		}
 	}
 	var err2 error
-	resposta, _, outJson, err2 = cotacao.Calculo(ativo, config, alerta)
+	resposta, _, outJson, err2 = cotacao.Calculo(ativo, config, alerta, mr)
 	if err2 != nil {
 		return fmt.Sprintf("cotacao: calculo[2]: %s", err2)
 	}
@@ -74,13 +80,15 @@ func Total() string {
 		return fmt.Sprintf("cotacao: read carteira.cfg: %s", err)
 	}
 
+	mr := make(map[string]*rsi.RSI)
 	atual := 0.0
 	for _, atv := range carteira.Ativos {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
+		mr[atv.Simbolo] = rsi.NewRSI()
 
-		_, _, out, err := cotacao.Calculo(atv, config, alerta)
+		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {
 			return fmt.Sprintf("cotacao: calclulo: %s", err)
 		}
