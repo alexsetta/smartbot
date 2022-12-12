@@ -25,7 +25,7 @@ type OrderResult struct {
 
 func (r *OrderResult) String() string {
 	res := fmt.Sprintf(`{"time":"%s","from":"%s","fromQty":%f,"fromValue":%f,"to":"%s","toQty":%f,"toValue":%f}`, r.time, r.from, r.fromQty, r.fromValue, r.to, r.toQty, r.toValue)
-	util.AppendFile("./order.log", res)
+	util.AppendFile("../../files/order.log", res)
 	return res
 }
 

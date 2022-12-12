@@ -6,8 +6,8 @@ import (
 )
 
 func TestRSI_Add(t *testing.T) {
-	r := NewRSI()
-	assert.Equal(t, &RSI{}, r)
+	r := NewRSI("teste")
+	assert.Equal(t, &RSI{id: "teste"}, r)
 
 	r.Add(1.0)
 	r.Add(2.0)
@@ -32,8 +32,8 @@ func TestRSI_Add(t *testing.T) {
 }
 
 func TestRSI_CalculateRSI(t *testing.T) {
-	r := NewRSI()
-	assert.Equal(t, &RSI{}, r)
+	r := NewRSI("ETHBRL")
+	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
 
 	r.Add(6584.92)
 	r.Add(6584.92)
@@ -53,16 +53,16 @@ func TestRSI_CalculateRSI(t *testing.T) {
 	r.Add(6576.82)
 
 	rsi := r.Calculate()
-	assert.Equal(t, 42.657722987672116, rsi, "The RSI should be 42.657722987672116")
+	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
 
 	r.Add(6573.53)
 	rsi = r.Calculate()
-	assert.Equal(t, 40.256629597946954, rsi, "The RSI should be 40.256629597946954")
+	assert.Equal(t, 40.26, rsi, "The RSI should be 40.26")
 }
 
 func TestRSI_CalculateRSIWithFewPrices(t *testing.T) {
-	r := NewRSI()
-	assert.Equal(t, &RSI{}, r)
+	r := NewRSI("ETHBRL")
+	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
 
 	r.Add(6584.92)
 	r.Add(6584.92)
@@ -73,13 +73,13 @@ func TestRSI_CalculateRSIWithFewPrices(t *testing.T) {
 	r.Add(6580.43)
 
 	rsi := r.Calculate()
-	assert.Equal(t, 0.0, rsi, "The RSI should be 0")
+	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
 }
 
 func TestRSI_ManyRSI(t *testing.T) {
 	mr := make(map[string]*RSI)
-	mr["ETHBRL"] = NewRSI()
-	assert.Equal(t, &RSI{}, mr["ETHBRL"])
+	mr["ETHBRL"] = NewRSI("ETHBRL")
+	assert.Equal(t, &RSI{id: "ETHBRL"}, mr["ETHBRL"])
 
 	mr["ETHBRL"].Add(6584.92)
 	mr["ETHBRL"].Add(6584.92)
@@ -100,6 +100,13 @@ func TestRSI_ManyRSI(t *testing.T) {
 	mr["ETHBRL"].Add(6576.82)
 
 	rsi := mr["ETHBRL"].Calculate()
-	assert.Equal(t, 42.657722987672116, rsi, "The RSI should be 42.657722987672116")
+	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
+}
 
+func TestRSI_LoadRSI(t *testing.T) {
+	r := NewRSI("ETHBRL")
+	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
+
+	rsi := r.Calculate()
+	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
 }

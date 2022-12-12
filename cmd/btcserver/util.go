@@ -48,11 +48,12 @@ func saidaHtml(w http.ResponseWriter, p Page) {
 	}
 }
 func ReadConfig() error {
-	if err := cfg.ReadConfig("../smartbot.cfg", &config); err != nil {
+	dirBase := "../../config/"
+	if err := cfg.ReadConfig(dirBase+"smartbot.cfg", &config); err != nil {
 		return err
 	}
 
-	if err := cfg.ReadConfig("../carteira.cfg", &carteira); err != nil {
+	if err := cfg.ReadConfig(dirBase+"carteira.cfg", &carteira); err != nil {
 		return err
 	}
 

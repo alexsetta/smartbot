@@ -1,14 +1,28 @@
 package rsi
 
+import (
+	"fmt"
+	"log"
+	"math"
+	"os"
+	"strconv"
+	"strings"
+)
+
 const period = 14
 
 type RSI struct {
-	prices []float64
+	id       string
+	loadFile bool
+	prices   []float64
 }
 
 // NewRSI returns a new RSI struct
-func NewRSI() *RSI {
-	return &RSI{}
+func NewRSI(id string, loadFile bool) *RSI {
+	return &RSI{
+		id:       id,
+		loadFile: loadFile,
+	}
 }
 
 // AppendPrice appends a new price to the prices slice
@@ -25,6 +39,10 @@ func (r *RSI) Calculate() float64 {
 		avgGain float64
 		avgLoss float64
 	)
+
+	if len(r.prices) < (period+1) && r.loadFile {
+		r.load()
+	}
 
 	if len(r.prices) < (period + 1) {
 		return 0
@@ -45,5 +63,43 @@ func (r *RSI) Calculate() float64 {
 	avgLoss /= float64(period)
 	rs := avgGain / avgLoss
 	rsi := 100 - (100 / (1 + rs))
-	return rsi
+
+	r.save()
+
+	return math.Round(rsi*100) / 100
+}
+
+// get file name
+func (r *RSI) fileName() string {
+	return fmt.Sprintf("../../files/rsi_%s.txt", strings.ToLower(r.id))
+}
+
+// save buffer to file
+func (r *RSI) save() {
+	buffer := ""
+	for _, price := range r.prices {
+		buffer += fmt.Sprintf("%f ", price)
+	}
+
+	err := os.WriteFile(r.fileName(), []byte(buffer), 0644)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// load buffer from file
+func (r *RSI) load() {
+	buffer, err := os.ReadFile(r.fileName())
+	if err != nil {
+		log.Println(err)
+	}
+	prices := strings.Split(string(buffer), " ")
+	for _, price := range prices {
+		if price != "" {
+			val, err := strconv.ParseFloat(price, 64)
+			if err == nil {
+				r.Add(val)
+			}
+		}
+	}
 }

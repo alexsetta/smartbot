@@ -98,12 +98,12 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[
 
 	res := fmt.Sprintf("%-12v %-20v %-15v", ativo.Simbolo, fmt.Sprintf("Preço: R$ %.2f", price), fmt.Sprintf("Dif.: %.2f", diff))
 	if ativo.AlertaPerc != 0 || ativo.Tipo == "criptomoeda" {
-		rsi := result.RSI
+		rsiCalc := result.RSI
 		res += fmt.Sprintf("%-10v %-22v", fmt.Sprintf(" (%.2f%%)", perc), fmt.Sprintf("Valor: R$ %.2f ", atual))
 		if len(ativo.RSI) > 0 {
-			res += fmt.Sprintf("%-12v", fmt.Sprintf("RSI: %.2f", rsi))
+			res += fmt.Sprintf("%-12v", fmt.Sprintf("RSI: %.2f", rsiCalc))
 		}
-		if rsi != 0 && (rsi <= 30 || rsi >= 70) && time.Since(alerta.RSI).Hours() > 4 {
+		if rsiCalc != 0 && (rsiCalc <= 30 || rsiCalc >= 70) && time.Since(alerta.RSI).Hours() > 4 {
 			msg := fmt.Sprintf(res + "RSI")
 			sema := "rsi"
 			_ = mensagem.Send(cfg, msg)

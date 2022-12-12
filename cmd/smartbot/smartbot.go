@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/alexsetta/smartbot/rsi"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -22,15 +21,16 @@ var (
 	carteira  = tipos.Carteira{}
 	config    = tipos.Config{}
 	loc       = time.FixedZone("UTC-3", -3*60*60)
-	filename  = "./ultimo.txt"
 	ultimoDia = "00"
+	dirBase   = "../.."
+	filename  = dirBase + "/files/ultimo.txt"
 )
 
 func main() {
 	Formatter := new(log.JSONFormatter)
 	Formatter.TimestampFormat = "2006-01-02 15:04:05.000"
 	log.SetFormatter(Formatter)
-	f, err := os.OpenFile("./smartbot.log", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	f, err := os.OpenFile(dirBase+"/files/smartbot.log", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -47,7 +47,7 @@ func main() {
 		fmt.Println("Simulando trade...")
 	}
 
-	if err := cfg.ReadConfig("./smartbot.cfg", &config); err != nil {
+	if err := cfg.ReadConfig(dirBase+"/config/smartbot.cfg", &config); err != nil {
 		log.Fatal(err)
 	}
 	if *test {
@@ -62,16 +62,16 @@ func main() {
 	}
 
 	// cria um RSI para cada ativo
-	if err := cfg.ReadConfig("./carteira.cfg", &carteira); err != nil {
+	if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
 		log.Fatal(err)
 	}
 	mr := make(map[string]*rsi.RSI)
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI()
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
 	}
 
 	for {
-		if err := cfg.ReadConfig("./carteira.cfg", &carteira); err != nil {
+		if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
 			log.Fatal(err)
 		}
 		hm := time.Now().In(loc).Format("15:04")
@@ -91,7 +91,7 @@ func main() {
 				setAlert(semaforo)
 			}(ativo, config, alerta)
 		}
-		if err := ioutil.WriteFile(filename, []byte(ultimo), 0644); err != nil {
+		if err := os.WriteFile(filename, []byte(ultimo), 0644); err != nil {
 			fmt.Println(fmt.Errorf("writefile: %w", err))
 		}
 
@@ -152,7 +152,7 @@ func total(cfg tipos.Config, cart tipos.Carteira) string {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI()
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
 		_, _, out, err := cotacao.Calculo(atv, cfg, alerta, mr)
 		if err != nil {
 			return fmt.Sprintf("total: %w", err)
