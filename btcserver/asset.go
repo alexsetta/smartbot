@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alexsetta/smartbot/cotacao"
+	"github.com/alexsetta/smartbot/rsi"
 	"github.com/alexsetta/smartbot/tipos"
 	"strings"
 )
@@ -46,9 +47,11 @@ func (a *Asset) Find() error {
 
 	// desabilita saveLog
 	config.SaveLog = false
+	mr := make(map[string]*rsi.RSI)
 
 	ativo := tipos.Ativo{}
 	for _, atv := range carteira.Ativos {
+		mr[atv.Simbolo] = rsi.NewRSI()
 		if strings.ToLower(atv.Simbolo) == a.id {
 			ativo = atv
 			break
@@ -59,7 +62,7 @@ func (a *Asset) Find() error {
 		return fmt.Errorf("asset %s not found", a.id)
 	}
 
-	_, _, out, err := cotacao.Calculo(ativo, config, alerta)
+	_, _, out, err := cotacao.Calculo(ativo, config, alerta, mr)
 	if err != nil {
 		return err
 	}
@@ -77,10 +80,13 @@ func (a *Asset) GetAll() ([]tipos.Result, error) {
 	// desabilita saveLog
 	config.SaveLog = false
 
+	mr := make(map[string]*rsi.RSI)
+
 	resposta := ""
 	var outJson []tipos.Result
 	for _, atv := range carteira.Ativos {
-		_, _, out, err := cotacao.Calculo(atv, config, alerta)
+		mr[atv.Simbolo] = rsi.NewRSI()
+		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {
 			return []tipos.Result{}, err
 		}
