@@ -6,7 +6,7 @@ import (
 )
 
 func TestFind(t *testing.T) {
-	asset, err := NewAsset("btcbrl")
+	asset, err := NewAsset("ethbrl", false)
 	assert.Nil(t, err)
 	assert.NotNil(t, asset)
 
@@ -14,14 +14,14 @@ func TestFind(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, asset.data)
 
-	assert.Equal(t, "BTCBRL", asset.data.Simbolo, "BTCBRL should equal BTCBRL")
+	assert.Equal(t, "ETHBRL", asset.data.Simbolo, "ETHBRL should equal ETHBRL")
 	assert.NotZero(t, asset.data.Preco, "Preco should not be zero")
 
 	//fmt.Println(PrettyJson(asset.data))
 }
 
 func TestGetAll(t *testing.T) {
-	asset, err := NewAsset("all")
+	asset, err := NewAsset("all", false)
 	assert.Nil(t, err)
 	assert.NotNil(t, asset)
 

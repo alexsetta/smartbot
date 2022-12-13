@@ -10,7 +10,7 @@ func Ticker(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	asset, err := NewAsset(id)
+	asset, err := NewAsset(id, true)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

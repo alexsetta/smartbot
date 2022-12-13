@@ -11,7 +11,7 @@ import (
 
 func Total(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Total")
-	if err := cfg.ReadConfig("../smartbot.cfg", &config); err != nil {
+	if err := cfg.ReadConfig("../coletor.cfg", &config); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -29,7 +29,7 @@ func Total(w http.ResponseWriter, r *http.Request) {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, "../../files", false)
 
 		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {

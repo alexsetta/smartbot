@@ -37,7 +37,7 @@ func PrettyJson(data interface{}) (string, error) {
 }
 
 func test1() {
-	var filename string = "./smartbot.log"
+	var filename string = "./coletor.log"
 	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	Formatter := new(log.JSONFormatter)
 	Formatter.TimestampFormat = "2006-01-02 15:04:05"
@@ -49,7 +49,7 @@ func test1() {
 	}
 	log.Info("inicio")
 
-	if err := cfg.ReadConfig("d:/dev/go/app/smartbot/carteira.cfg", &carteira); err != nil {
+	if err := cfg.ReadConfig("d:/dev/go/app/coletor/carteira.cfg", &carteira); err != nil {
 		log.Fatal(err)
 	}
 	resp, _, result, err := cotacao.Calculo(carteira.Ativos[0], config, alerta)

@@ -31,13 +31,13 @@ func PrettyJson(data interface{}) (string, error) {
 }
 
 func Cotacao(id string) string {
-	if err := cfg.ReadConfig("../carteira.cfg", &carteira); err != nil {
+	if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
 		return fmt.Sprintf("cotacao: read carteira.cfg: %s", err)
 	}
 
 	mr := make(map[string]*rsi.RSI)
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, true)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirBase+"/files", true)
 	}
 
 	resposta := "["
@@ -76,7 +76,7 @@ func Cotacao(id string) string {
 }
 
 func Total() string {
-	if err := cfg.ReadConfig("../carteira.cfg", &carteira); err != nil {
+	if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
 		return fmt.Sprintf("cotacao: read carteira.cfg: %s", err)
 	}
 
@@ -86,7 +86,7 @@ func Total() string {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirBase+"/files", false)
 
 		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {

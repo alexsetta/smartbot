@@ -10,12 +10,13 @@ import (
 )
 
 type Asset struct {
-	id   string
-	data tipos.Result
+	id       string
+	loadFile bool
+	data     tipos.Result
 }
 
-func NewAsset(id string) (*Asset, error) {
-	asset := &Asset{id: id, data: tipos.Result{}}
+func NewAsset(id string, loadFile bool) (*Asset, error) {
+	asset := &Asset{id: id, loadFile: loadFile, data: tipos.Result{}}
 
 	if err := asset.IsValid(); err != nil {
 		return nil, err
@@ -29,6 +30,10 @@ func NewAsset(id string) (*Asset, error) {
 		return nil, err
 	}
 	return asset, nil
+}
+
+func (a *Asset) SetLoadFile(loadFile bool) {
+	a.loadFile = loadFile
 }
 
 func (a *Asset) IsValid() error {
@@ -51,9 +56,11 @@ func (a *Asset) Find() error {
 
 	ativo := tipos.Ativo{}
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, true)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirPath, a.loadFile)
 		if strings.ToLower(atv.Simbolo) == a.id {
-			mr[atv.Simbolo].Load()
+			if a.loadFile && len(atv.RSI) > 0 {
+				mr[atv.Simbolo].Load()
+			}
 			ativo = atv
 			break
 		}
@@ -86,7 +93,7 @@ func (a *Asset) GetAll() ([]tipos.Result, error) {
 	resposta := ""
 	var outJson []tipos.Result
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, true)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirPath, a.loadFile)
 		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {
 			return []tipos.Result{}, err

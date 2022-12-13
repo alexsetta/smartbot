@@ -7,7 +7,11 @@ import (
 	"log"
 	"strings"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
+
+const (
+	dirBase = "../.."
 )
 
 var (
@@ -16,8 +20,8 @@ var (
 )
 
 func main() {
-	if err := cfg.ReadConfig("../smartbot.cfg", &config); err != nil {
-		log.Fatal(fmt.Sprintf("cotacao: read smartbot.cfg: %s", err))
+	if err := cfg.ReadConfig(dirBase+"/config/smartbot.cfg", &config); err != nil {
+		log.Fatal(fmt.Sprintf("cotacao: read coletor.cfg: %s", err))
 	}
 	config.TelegramID = 0
 
@@ -31,7 +35,7 @@ func main() {
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
-	updates := bot.GetUpdatesChan(u)
+	updates, _ := bot.GetUpdatesChan(u)
 
 	for update := range updates {
 		if update.Message != nil { // If we got a message

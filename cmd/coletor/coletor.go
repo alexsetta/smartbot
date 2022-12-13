@@ -15,6 +15,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	dirBase = "../.."
+)
+
 var (
 	hora      = time.Now().Add(time.Hour * -5)
 	alerta    = tipos.Alertas{hora, hora, hora, hora, hora, hora}
@@ -22,7 +26,6 @@ var (
 	config    = tipos.Config{}
 	loc       = time.FixedZone("UTC-3", -3*60*60)
 	ultimoDia = "00"
-	dirBase   = "../.."
 	filename  = dirBase + "/files/ultimo.txt"
 )
 
@@ -30,7 +33,7 @@ func main() {
 	Formatter := new(log.JSONFormatter)
 	Formatter.TimestampFormat = "2006-01-02 15:04:05.000"
 	log.SetFormatter(Formatter)
-	f, err := os.OpenFile(dirBase+"/files/smartbot.log", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	f, err := os.OpenFile(dirBase+"/files/coletor.log", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -48,6 +51,7 @@ func main() {
 	}
 
 	if err := cfg.ReadConfig(dirBase+"/config/smartbot.cfg", &config); err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
 	}
 	if *test {
@@ -63,15 +67,17 @@ func main() {
 
 	// cria um RSI para cada ativo
 	if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
 	}
 	mr := make(map[string]*rsi.RSI)
 	for _, atv := range carteira.Ativos {
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirBase+"/files", false)
 	}
 
 	for {
 		if err := cfg.ReadConfig(dirBase+"/config/carteira.cfg", &carteira); err != nil {
+			fmt.Println(err)
 			log.Fatal(err)
 		}
 		hm := time.Now().In(loc).Format("15:04")
@@ -152,7 +158,7 @@ func total(cfg tipos.Config, cart tipos.Carteira) string {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, dirBase+"/files", false)
 		_, _, out, err := cotacao.Calculo(atv, cfg, alerta, mr)
 		if err != nil {
 			return fmt.Sprintf("total: %w", err)

@@ -49,13 +49,13 @@ func Order(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("Order from", from, "to", to)
 
-	fromAsset, err := NewAsset(from)
+	fromAsset, err := NewAsset(from, false)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	toAsset, err := NewAsset(to)
+	toAsset, err := NewAsset(to, false)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

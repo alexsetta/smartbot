@@ -13,14 +13,16 @@ const period = 14
 
 type RSI struct {
 	id       string
+	filePath string
 	loadFile bool
 	prices   []float64
 }
 
 // NewRSI returns a new RSI struct
-func NewRSI(id string, loadFile bool) *RSI {
+func NewRSI(id string, filePath string, loadFile bool) *RSI {
 	return &RSI{
 		id:       id,
+		filePath: filePath,
 		loadFile: loadFile,
 	}
 }
@@ -40,7 +42,7 @@ func (r *RSI) Calculate() float64 {
 		avgLoss float64
 	)
 
-	if len(r.prices) < (period+1) && r.loadFile {
+	if len(r.prices) < (period+1) && r.loadFile && len(r.filePath) > 0 {
 		r.Load()
 	}
 
@@ -49,7 +51,7 @@ func (r *RSI) Calculate() float64 {
 	}
 	start := len(r.prices) - period
 	finish := len(r.prices)
-	period := finish - start
+	interval := finish - start
 
 	for i := start; i < finish; i++ {
 		if r.prices[i] > r.prices[i-1] {
@@ -59,8 +61,8 @@ func (r *RSI) Calculate() float64 {
 		}
 	}
 
-	avgGain /= float64(period)
-	avgLoss /= float64(period)
+	avgGain /= float64(interval)
+	avgLoss /= float64(interval)
 	rs := avgGain / avgLoss
 	rsi := 100 - (100 / (1 + rs))
 
@@ -72,7 +74,7 @@ func (r *RSI) Calculate() float64 {
 
 // get file name
 func (r *RSI) fileName() string {
-	return fmt.Sprintf("../../files/rsi_%s.txt", strings.ToLower(r.id))
+	return fmt.Sprintf("%s/rsi_%s.txt", r.filePath, strings.ToLower(r.id))
 }
 
 // save buffer to file

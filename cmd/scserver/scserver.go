@@ -34,6 +34,10 @@ var (
 	start     = time.Now()
 )
 
+const (
+	dirPath = "../../files/"
+)
+
 func main() {
 	porta = "8081"
 	if len(os.Args) == 2 {
@@ -52,7 +56,7 @@ func main() {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	_, _ = fmt.Fprintln(w, "btcserver online\nstart time: ", time.Since(start))
+	_, _ = fmt.Fprintln(w, "scserver online\nstart time: ", time.Since(start))
 }
 
 func body(url string) (string, error) {

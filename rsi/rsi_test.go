@@ -5,9 +5,13 @@ import (
 	"testing"
 )
 
+const (
+	dirFile = "d:/dev/go/app/coletor/files"
+)
+
 func TestRSI_Add(t *testing.T) {
-	r := NewRSI("teste")
-	assert.Equal(t, &RSI{id: "teste"}, r)
+	r := NewRSI("teste", "", false)
+	assert.Equal(t, &RSI{id: "teste", filePath: "", loadFile: false}, r)
 
 	r.Add(1.0)
 	r.Add(2.0)
@@ -32,10 +36,9 @@ func TestRSI_Add(t *testing.T) {
 }
 
 func TestRSI_CalculateRSI(t *testing.T) {
-	r := NewRSI("ETHBRL")
-	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
+	r := NewRSI("ETHBRL", dirFile, false)
+	assert.Equal(t, &RSI{id: "ETHBRL", filePath: dirFile, loadFile: false}, r)
 
-	r.Add(6584.92)
 	r.Add(6584.92)
 	r.Add(6584.92)
 	r.Add(6585.64)
@@ -61,28 +64,26 @@ func TestRSI_CalculateRSI(t *testing.T) {
 }
 
 func TestRSI_CalculateRSIWithFewPrices(t *testing.T) {
-	r := NewRSI("ETHBRL")
-	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
+	r := NewRSI("ETHBRL", dirFile, false)
+	assert.Equal(t, &RSI{id: "ETHBRL", filePath: dirFile, loadFile: false}, r)
 
-	r.Add(6584.92)
 	r.Add(6584.92)
 	r.Add(6584.92)
 	r.Add(6585.64)
 	r.Add(6582.45)
 	r.Add(6576.54)
 	r.Add(6580.43)
+	r.Add(6573.94)
 
 	rsi := r.Calculate()
-	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
+	assert.Equal(t, 0.0, rsi, "The RSI should be 0.0")
 }
 
 func TestRSI_ManyRSI(t *testing.T) {
 	mr := make(map[string]*RSI)
-	mr["ETHBRL"] = NewRSI("ETHBRL")
-	assert.Equal(t, &RSI{id: "ETHBRL"}, mr["ETHBRL"])
+	mr["ETHBRL"] = NewRSI("ETHBRL", dirFile, false)
+	assert.Equal(t, &RSI{id: "ETHBRL", filePath: dirFile, loadFile: false}, mr["ETHBRL"])
 
-	mr["ETHBRL"].Add(6584.92)
-	mr["ETHBRL"].Add(6584.92)
 	mr["ETHBRL"].Add(6584.92)
 	mr["ETHBRL"].Add(6584.92)
 	mr["ETHBRL"].Add(6585.64)
@@ -104,10 +105,12 @@ func TestRSI_ManyRSI(t *testing.T) {
 }
 
 func TestRSI_LoadRSI(t *testing.T) {
-	r := NewRSI("ETHBRL")
-	assert.Equal(t, &RSI{id: "ETHBRL"}, r)
-	r.Load()
+	// Antes é necessário rodar "TestRSI_CalculateRSI" para gerar o arquivo
+	TestRSI_CalculateRSI(t)
+
+	r := NewRSI("ETHBRL", dirFile, true)
+	assert.Equal(t, &RSI{id: "ETHBRL", filePath: dirFile, loadFile: true}, r)
 
 	rsi := r.Calculate()
-	assert.Equal(t, 42.66, rsi, "The RSI should be 42.66")
+	assert.Equal(t, 40.26, rsi, "The RSI should be 40.26")
 }
