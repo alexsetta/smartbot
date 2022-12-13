@@ -47,7 +47,7 @@ func main() {
 	router.HandleFunc("/total/", Total)
 	router.HandleFunc("/order/{from}/{to}", Order)
 
-	fmt.Println("Listen port " + porta)
+	log.Println("Listen port " + porta)
 	log.Fatal(http.ListenAndServe(":"+porta, router))
 }
 

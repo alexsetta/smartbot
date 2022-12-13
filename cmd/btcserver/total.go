@@ -29,7 +29,7 @@ func Total(w http.ResponseWriter, r *http.Request) {
 		if atv.Tipo != "criptomoeda" {
 			continue
 		}
-		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo)
+		mr[atv.Simbolo] = rsi.NewRSI(atv.Simbolo, false)
 
 		_, _, out, err := cotacao.Calculo(atv, config, alerta, mr)
 		if err != nil {

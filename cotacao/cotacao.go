@@ -82,7 +82,7 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[
 
 	if (ativo.Tipo == "criptomoeda" || ativo.Tipo == "etf") && len(ativo.RSI) > 0 {
 		//result.RSI, _ = GetRSI(ativo.RSI)
-		rsi[ativo.Simbolo].Add(result.Atual)
+		rsi[ativo.Simbolo].Add(result.Preco)
 		result.RSI = rsi[ativo.Simbolo].Calculate()
 	}
 

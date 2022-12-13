@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ func Ticker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Ticker", id)
+	log.Println("Ticker", id)
 
 	resposta := ""
 	if id == "all" {
