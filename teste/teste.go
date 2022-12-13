@@ -52,7 +52,7 @@ func test1() {
 	if err := cfg.ReadConfig("d:/dev/go/app/coletor/carteira.cfg", &carteira); err != nil {
 		log.Fatal(err)
 	}
-	resp, _, result, err := cotacao.Calculo(carteira.Ativos[0], config, alerta)
+	resp, _, result, err := cotacao.Calculo(carteira.Ativos[0], config, alerta, nil)
 	if err != nil {
 		log.Println(err)
 	}
