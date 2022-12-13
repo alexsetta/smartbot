@@ -104,7 +104,12 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[
 			res += fmt.Sprintf("%-12v", fmt.Sprintf("RSI: %.2f", rsiCalc))
 		}
 		if rsiCalc != 0 && (rsiCalc <= 30 || rsiCalc >= 70) && time.Since(alerta.RSI).Hours() > 4 {
-			msg := res + "RSI Alerta!"
+			acao := "VENDA"
+			if rsiCalc <= 30 {
+				acao = "COMPRA"
+			}
+			msg := res + "RSI Alerta de " + acao
+
 			sema := "rsi"
 			_ = mensagem.Send(cfg, msg)
 			return msg, sema, result, nil
