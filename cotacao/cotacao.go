@@ -103,7 +103,7 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[
 		if len(ativo.RSI) > 0 {
 			res += fmt.Sprintf("%-12v", fmt.Sprintf("RSI: %.2f", rsiCalc))
 		}
-		if rsiCalc != 0 && (rsiCalc <= 30 || rsiCalc >= 70) && time.Since(alerta.RSI).Hours() > 4 {
+		if rsiCalc != 0 && (rsiCalc <= 30 || rsiCalc >= 70) && time.Since(alerta.RSI).Hours() > cfg.TimeNextAlert {
 			acao := "VENDA"
 			if rsiCalc <= 30 {
 				acao = "COMPRA"
@@ -116,34 +116,34 @@ func Calculo(ativo tipos.Ativo, cfg tipos.Config, alerta tipos.Alertas, rsi map[
 		}
 	}
 
-	if ativo.Perda != 0 && diff < 0 && diff < ativo.Perda && time.Since(alerta.Perda).Hours() > 4 {
+	if ativo.Perda != 0 && diff < 0 && diff < ativo.Perda && time.Since(alerta.Perda).Hours() > cfg.TimeNextAlert {
 		msg := res + "Atingiu o limite de perda!"
 		sema := "perda"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
-	if ativo.Ganho != 0 && diff > 0 && diff > ativo.Ganho && time.Since(alerta.Ganho).Hours() > 4 {
+	if ativo.Ganho != 0 && diff > 0 && diff > ativo.Ganho && time.Since(alerta.Ganho).Hours() > cfg.TimeNextAlert {
 		msg := res + "Atingiu o limite de ganho!"
 		sema := "ganho"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
-	if ativo.AlertaInf != 0 && price <= ativo.AlertaInf && time.Since(alerta.AlertaInf).Hours() > 4 {
+	if ativo.AlertaInf != 0 && price <= ativo.AlertaInf && time.Since(alerta.AlertaInf).Hours() > cfg.TimeNextAlert {
 		msg := res + "Atingiu o limite inferior!"
 		sema := "alertainf"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
-	if ativo.AlertaSup != 0 && price >= ativo.AlertaSup && time.Since(alerta.AlertaSup).Hours() > 4 {
+	if ativo.AlertaSup != 0 && price >= ativo.AlertaSup && time.Since(alerta.AlertaSup).Hours() > cfg.TimeNextAlert {
 		msg := res + "Atingiu o limite superior!"
 		sema := "alertasup"
 		_ = mensagem.Send(cfg, msg)
 		return msg, sema, result, nil
 	}
 
-	if ativo.AlertaPerc > 0 && perc > ativo.AlertaPerc && time.Since(alerta.AlertaPerc).Hours() > 4 {
+	if ativo.AlertaPerc > 0 && perc > ativo.AlertaPerc && time.Since(alerta.AlertaPerc).Hours() > cfg.TimeNextAlert {
 		msg := res + "Atingiu o limite percentual!"
 		sema := "alertaperc"
 		_ = mensagem.Send(cfg, msg)

@@ -114,7 +114,7 @@ func main() {
 				fmt.Println(fmt.Errorf("send: %w", err))
 			}
 		}
-		time.Sleep(time.Duration(config.SleepMinutes) * time.Minute)
+		time.Sleep(time.Duration(config.SleepSeconds) * time.Second)
 	}
 }
 

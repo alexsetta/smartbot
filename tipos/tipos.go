@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	SleepMinutes  int     `json:"sleepMinutes"`
+	SleepSeconds  int     `json:"sleepSeconds"`
 	TimeNextAlert float64 `json:"timeNextAlert"`
 	TelegramID    int64   `json:"telegramID"`
 	TelegramToken string  `json:"telegramToken"`
